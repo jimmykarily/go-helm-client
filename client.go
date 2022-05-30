@@ -533,6 +533,25 @@ func (c *HelmClient) LintChart(spec *ChartSpec) error {
 	return c.lint(chartPath, values)
 }
 
+// ShowChart fetches a chart using the provided ChartSpec 'spec'
+func (c *HelmClient) ShowChart(spec *ChartSpec) (*chart.Chart, error) {
+	options := &action.ChartPathOptions{
+		Version: spec.Version,
+	}
+
+	chartPath, err := options.LocateChart(spec.ChartName, c.Settings)
+	if err != nil {
+		return nil, err
+	}
+
+	helmChart, err := loader.Load(chartPath)
+	if err != nil {
+		return nil, err
+	}
+
+	return helmChart, nil
+}
+
 // SetDebugLog set's a Helm client's DebugLog to the desired 'debugLog'.
 func (c *HelmClient) SetDebugLog(debugLog action.DebugLog) {
 	c.DebugLog = debugLog
